@@ -8,7 +8,7 @@ def home():
 
 @app.route('/login')
 def login():
-    return render_template('login.html')  # Make sure login.html exists
+    return render_template('floginpage.html') 
 
 if __name__ == '__main__':
     app.run(debug=True)
