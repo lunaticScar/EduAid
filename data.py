@@ -1,6 +1,6 @@
 USERS = {
-    'alice': {
-        'password': 'alice123',
+    'hardik': {
+        'password': 'hardik123',
         'data': {
             'student_id': '20250001',
             'student_name': 'Alice Johnson',
