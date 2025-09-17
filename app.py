@@ -191,11 +191,9 @@ def signup():
         db.session.add(user)
         db.session.flush()  # Get user ID without committing
 
-
-
-
         if role == "ngo":
             ngo = NGO(
+                user_id=user.id,
                 name=ngo_name,
                 email=email,
                 description=ngo_description,
@@ -287,60 +285,6 @@ def signup():
 
     return render_template("signup.html")
 
-
-# In your routes.py
-
-@app.route("/contact_ngo", methods=["POST"])
-@login_required
-def contact_ngo():
-    if current_user.role != "student":
-        return jsonify({"success": False, "message": "Only students can contact NGOs"})
-    
-    ngo_id = request.form.get("ngo_id")
-    message = request.form.get("message", "I would like to request support from your organization.")
-    
-    # Find the specific NGO from the NGO table
-    ngo = NGO.query.get(ngo_id)
-    if not ngo:
-        return jsonify({"success": False, "message": "NGO not found"})
-    
-    # Create the request using your ContactRequest model
-    new_request = ContactRequest(
-        student_id=current_user.id, # The logged-in student's user ID
-        ngo_id=ngo.id,              # The ID of the NGO being contacted
-        message=message
-    )
-    db.session.add(new_request)
-    db.session.commit()
-    
-    return jsonify({
-        "success": True, 
-        "message": f"Your request has been sent to {ngo.name}. They will be in touch soon."
-    })
-
-# @app.route("/contact_ngo", methods=["POST"])
-# @login_required
-# def contact_ngo():
-#     if current_user.role != "student":
-#         return jsonify({"success": False, "message": "Only students can contact NGOs"})
-    
-#     ngo_id = request.form.get("ngo_id")
-#     message = request.form.get("message", "I would like to request support from your organization.")
-    
-#     ngo = NGO.query.get(ngo_id)
-#     if not ngo:
-#         return jsonify({"success": False, "message": "NGO not found"})
-    
-#     # In a real application, you would:
-#     # 1. Store the contact request in the database
-#     # 2. Send an email notification to the NGO
-#     # 3. Possibly notify the student that their request was sent
-    
-#     # For this demo, we'll just return a success message
-#     return jsonify({
-#         "success": True, 
-#         "message": f"Your request has been sent to {ngo.name}. They will contact you soon."
-#     })    
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -677,10 +621,6 @@ def student_detail(user_id):
     gpa = compute_gpa_from_sem_grades(profile.sem1_grade, profile.sem2_grade)
     return render_template("student_detail.html", profile=profile, gpa=gpa)
 
-
-
-# In your routes.py
-
 @app.route("/ngo")
 @login_required
 def ngo_dashboard():
@@ -696,16 +636,67 @@ def ngo_dashboard():
     student_requests = ContactRequest.query.filter_by(ngo_id=ngo_profile.id).order_by(ContactRequest.created_at.desc()).all()
     
     # Pass the list of requests to the template
-    return render_template("ngo_dashboard.html", requests=student_requests,  ngo_name=ngo_profile.name)
-# @app.route("/ngo")
-# @login_required
-# def ngo_dashboard():
-#     if current_user.role != "ngo":
-#         flash("Access denied. NGO role required.", "danger")
-#         return redirect(url_for("student_dashboard"))
-        
-#     risky_students = StudentProfile.query.filter(StudentProfile.dropout_prediction > 70).all()
-#     return render_template("ngo_dashboard.html", students=risky_students)
+    return render_template("ngo_dashboard.html",
+                       contact_requests=student_requests,
+                       students=[],  # or your actual list of supported students
+                       ngo_name=ngo_profile.name)
+
+
+@app.route("/contact_ngo", methods=["POST"])
+@login_required
+def contact_ngo():
+    if current_user.role != "student":
+        return jsonify({"success": False, "message": "Only students can contact NGOs"}), 403
+
+    ngo_id = request.form.get("ngo_id")
+    message = request.form.get("message", "").strip()
+
+    if not ngo_id or not message:
+        return jsonify({"success": False, "message": "Missing NGO or message"}), 400
+
+    # Make sure NGO exists
+    ngo = NGO.query.get(ngo_id)
+    if not ngo:
+        return jsonify({"success": False, "message": "NGO not found"}), 404
+
+    # Create a new contact request
+    contact = ContactRequest(
+        ngo_id=ngo.id,
+        student_id=current_user.id,
+        message=message,
+        status="pending"
+    )
+    db.session.add(contact)
+    db.session.commit()
+
+    return jsonify({"success": True, "message": "Your request has been sent to the NGO!"})
+
+@app.route("/update_request_status", methods=["POST"])
+@login_required
+def update_request_status():
+    if current_user.role != "ngo":
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+
+    req_id = request.form.get("request_id")
+    status = request.form.get("status")
+
+    contact_request = ContactRequest.query.get(req_id)
+    if not contact_request:
+        return jsonify({"success": False, "message": "Request not found"}), 404
+
+    # Ensure NGO owns this request
+    ngo_profile = NGO.query.filter_by(user_id=current_user.id).first()
+    if contact_request.ngo_id != ngo_profile.id:
+        return jsonify({"success": False, "message": "Not your request"}), 403
+
+    # Update
+    if status in ["approved", "rejected"]:
+        contact_request.status = status
+        db.session.commit()
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "message": "Invalid status"}), 400
+
 
 if __name__ == "__main__":
     with app.app_context():

@@ -124,7 +124,12 @@
                       <div class="name">{{ ngo.name }}</div>
                       <div class="description">{{ ngo.desc }}</div>
                   </div>
-                  <button class="btn {% if loop.index0 == 0 %}btn-blue{% else %}btn-gold{% endif %}">{{ ngo.cta }}</button>
+                  <button 
+                    class="btn contact-ngo {% if loop.index0 == 0 %}btn-blue{% else %}btn-gold{% endif %}"
+                    data-ngo-id="{{ ngo.id }}"
+                    data-ngo-name="{{ ngo.name }}">
+                    {{ ngo.cta }}
+                  </button>
               </li>
             {% endfor %}
           </ul>
