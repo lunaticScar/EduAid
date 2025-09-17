@@ -1,144 +1,587 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EduAid - Student Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
-    .sidebar { background: #fff; border-right: 1px solid var(--border-color); padding: 24px 16px; }
-    .sidebar h2 { font-size: 1.2rem; margin: 0 0 20px; color: var(--royal-blue); }
-    .menu { list-style: none; padding: 0; margin: 0; }
-    .menu li { margin-bottom: 10px; }
-    .menu a { display: block; padding: 10px 12px; border-radius: 6px; text-decoration: none; color: var(--royal-blue); font-weight: 600; }
-    .menu a.active, .menu a:hover { background: #f4f6fb; color: var(--gold-accent); }
+    :root {
+      --royal-blue: #0A2342;
+      --royal-blue-darker: #081C33;
+      --gold-accent: #B8860B;
+      --gold-accent-hover: #D4AF37;
+      --background-cream: #FDFBF6;
+      --text-dark: #2C3A47;
+      --text-light: #FFFFFF;
+      --card-bg: #FFFFFF;
+      --border-light: #E0E0E0;
+      --success: #4CAF50;
+      --warning: #FF9800;
+      --danger: #F44336;
+      --heading-font: 'Merriweather', serif;
+      --body-font: 'Source Sans Pro', sans-serif;
+    }
 
-    .main { padding: 24px; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .muted { color: var(--text-light); font-size: 0.95rem; }
+    /* General Body Styling */
+    body {
+      margin: 0;
+      font-family: var(--body-font);
+      background-color: var(--background-cream);
+      color: var(--text-dark);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-    .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
-    .card { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; }
-    .card h4 { margin: 0 0 10px; color: var(--text-light); font-weight: 600; }
-    .stat { font-size: 1.4rem; font-weight: 700; color: var(--royal-blue); }
-    .sub { font-size: 0.9rem; color: var(--text-light); margin-top: 6px; }
+    /* Sidebar Styling */
+    .sidebar {
+      width: 260px;
+      background-color: var(--royal-blue);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-    .grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 20px; }
-    .panel { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; }
-    .panel h3 { margin: 0 0 12px; font-size: 1.2rem; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
-    th { color: var(--text-light); font-weight: 700; }
-    .ngo { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px; }
-    .badge { background: #eaf2ff; color: var(--royal-blue); font-weight: 700; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; }
-    .btn-sm { padding: 6px 10px; border-radius: 5px; border: 1px solid var(--gold-accent); background: var(--gold-accent); color: #fff; font-weight: 700; cursor: pointer; }
-    .btn-sm:hover { background: var(--gold-accent-hover); border-color: var(--gold-accent-hover); }
+    .sidebar .brand {
+      font-family: var(--heading-font);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gold-accent);
+      padding: 25px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(184, 134, 11, 0.3);
+    }
+
+    .sidebar nav ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    .sidebar nav li {
+      padding: 16px 25px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-light);
+      border-left: 4px solid transparent;
+      transition: all 0.3s ease;
+      opacity: 0.8;
+    }
+
+    .sidebar nav li.active,
+    .sidebar nav li:hover {
+      background-color: rgba(184, 134, 11, 0.15);
+      color: var(--gold-accent);
+      border-left: 4px solid var(--gold-accent);
+      opacity: 1;
+    }
+
+    .sidebar .user-info {
+      margin-top: auto;
+      padding: 20px;
+      text-align: center;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .logout-container {
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-logout {
+      width: 100%;
+      padding: 12px;
+      background-color: transparent;
+      border: 1px solid var(--gold-accent);
+      border-radius: 6px;
+      color: var(--gold-accent);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-logout:hover {
+      background-color: var(--gold-accent);
+      color: var(--royal-blue);
+    }
+
+    /* Main Content Area */
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      margin-left: 260px;
+      overflow-y: auto;
+      background-color: var(--background-cream);
+    }
+
+    /* Dashboard Header */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .dashboard-header h1 {
+      margin: 0;
+      font-family: var(--heading-font);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--royal-blue);
+    }
+
+    .dashboard-header p {
+      margin: 8px 0 0;
+      color: var(--text-dark);
+      opacity: 0.7;
+    }
+    
+    .student-id {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--royal-blue);
+      background-color: rgba(10, 35, 66, 0.1);
+      padding: 10px 15px;
+      border-radius: 8px;
+    }
+
+    /* Summary Cards */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 25px;
+      margin-bottom: 35px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--border-light);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card .card-title {
+        font-weight: 600;
+        color: var(--royal-blue);
+        margin-bottom: 12px;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .card .card-main-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--royal-blue);
+        margin-bottom: 5px;
+    }
+
+    .card .card-sub-value {
+        font-size: 14px;
+        color: var(--text-dark);
+        opacity: 0.7;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-green {
+        background-color: var(--success);
+        color: white;
+    }
+    
+    .btn-green:hover {
+        background-color: #43a047;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-blue {
+        background-color: var(--royal-blue);
+        color: white;
+    }
+    .btn-blue:hover {
+        background-color: var(--royal-blue-darker);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(10, 35, 66, 0.3);
+    }
+    
+    .btn-gold {
+        background-color: var(--gold-accent);
+        color: white;
+    }
+    .btn-gold:hover {
+        background-color: var(--gold-accent-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(184, 134, 11, 0.3);
+    }
+
+    /* Main Content Grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+    }
+    
+    .card h2 {
+        font-family: var(--heading-font);
+        font-size: 20px;
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: var(--royal-blue);
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--gold-accent);
+    }
+    
+    /* Table Styling for Performance and Attendance */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 16px 12px;
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    th {
+        font-size: 14px;
+        color: var(--royal-blue);
+        font-weight: 600;
+        text-transform: uppercase;
+        background-color: rgba(10, 35, 66, 0.05);
+    }
+    
+    tr:hover {
+        background-color: rgba(10, 35, 66, 0.03);
+    }
+    
+    .grade {
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--royal-blue);
+    }
+    
+    .grade-A { color: var(--success); }
+    .grade-B { color: var(--warning); }
+    .grade-C { color: var(--danger); }
+    
+    .feedback {
+        font-weight: 400;
+        color: var(--text-dark);
+        opacity: 0.8;
+    }
+
+    /* NGO Help Options */
+    .ngo-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .ngo-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 0;
+        border-bottom: 1px solid var(--border-light);
+        transition: background-color 0.3s ease;
+    }
+    
+    .ngo-item:hover {
+        background-color: rgba(10, 35, 66, 0.03);
+    }
+    
+    .ngo-item:last-child {
+        border-bottom: none;
+    }
+
+    .ngo-details .name {
+        font-weight: 600;
+        color: var(--royal-blue);
+        margin-bottom: 5px;
+    }
+    .ngo-details .description {
+        font-size: 14px;
+        color: var(--text-dark);
+        opacity: 0.7;
+    }
+    
+    /* Animation for cards */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .card {
+      animation: fadeIn 0.6s ease forwards;
+    }
+    
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+      }
+      
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+      
+      .summary-cards {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar">
-      <h2>EduAid</h2>
-      <ul class="menu">
-        <li><a href="#" class="active">Dashboard</a></li>
-        <li><a href="#">My Performance</a></li>
-        <li><a href="#">Attendance</a></li>
-        <li><a href="#">NGO Help</a></li>
+  <aside class="sidebar">
+    <div class="brand">EduAid</div>
+    <nav>
+      <ul>
+        <li class="active">Dashboard</li>
+        <li>My Performance</li>
+        <li>Attendance</li>
+        <li>NGO Help</li>
+        <li>Resources</li>
+        <li>Settings</li>
       </ul>
-      <div class="muted" style="position:absolute; bottom:24px;">Welcome, {{ student_name or 'Student' }}</div>
-    </aside>
+    </nav>
+    <div class="user-info">Welcome, {{ student_name }}</div>
+    <div class="logout-container">
+      <a href="{{ url_for('logout') }}">
+        <button class="btn-logout">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+          </svg>
+          Logout
+        </button>
+      </a>
+    </div>
+  </aside>
 
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h2 style="margin:0;">Welcome to your Student Portal</h2>
-          <div class="muted">Track your progress, attendance, and get help when you need it!</div>
-        </div>
-        <div class="muted">ID: {{ student_id }}</div>
+  <main class="main-content">
+    <header class="dashboard-header">
+      <div>
+        <h1>Welcome to your Student Portal</h1>
+        <p>Track your progress, attendance, and get help when you need it!</p>
+      </div>
+      <div class="student-id">ID: {{ student_id }}</div>
+    </header>
+
+    <section class="summary-cards">
+      <div class="card">
+        <div class="card-title">GPA</div>
+        <div class="card-main-value">{{ gpa }} / 10</div>
+        <div class="card-sub-value">Last semester: {{ last_gpa }}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Attendance</div>
+        <div class="card-main-value">{{ attendance_percent }}%</div>
+        <div class="card-sub-value">Absences: {{ absences }}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Next Exam</div>
+        <div class="card-main-value">{{ next_exam_subject }}</div>
+        <div class="card-sub-value">Date: {{ next_exam_date }}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">NGO Help</div>
+        <div class="card-main-value">{{ ngo_available }} Available</div>
+        <button class="btn btn-gold" style="margin-top: 10px;">View Options</button>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <div class="card">
+        <h2>Academic Performance</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Grade</th>
+              <th>Teacher Feedback</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in performance_rows %}
+            <tr>
+              <td>{{ row.subject }}</td>
+              <td class="grade grade-{{ row.grade[0] }}">{{ row.grade }}</td>
+              <td class="feedback">{{ row.feedback }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
 
-      <section class="cards">
-        <div class="card">
-          <h4>GPA</h4>
-          <div class="stat">{{ '%.1f' % gpa }} / 10</div>
-          <div class="sub">Last semester: {{ last_gpa }}</div>
-        </div>
-        <div class="card">
-          <h4>Attendance</h4>
-          <div class="stat">{{ attendance_percent }}%</div>
-          <div class="sub">Absences: {{ absences }}</div>
-        </div>
-        <div class="card">
-          <h4>Next Exam</h4>
-          <div class="stat"><a href="#" style="text-decoration:none; color:var(--royal-blue);">{{ next_exam_subject }}</a></div>
-          <div class="sub">Date: {{ next_exam_date }}</div>
-        </div>
-        <div class="card">
-          <h4>NGO Help</h4>
-          <div class="stat">{{ ngo_available }} Available</div>
-          <div class="sub"><button class="btn-sm">View Options</button></div>
-        </div>
-      </section>
-
-      <section class="grid">
-        <div class="panel">
-          <h3>Academic Performance</h3>
+      <div class="right-column">
+        <div class="card" style="margin-bottom: 30px;">
+          <h2>Attendance Record</h2>
           <table>
             <thead>
-              <tr><th>Subject</th><th>Grade</th><th>Teacher Feedback</th></tr>
-            </thead>
-            <tbody>
-            {% for row in performance_rows %}
               <tr>
-                <td>{{ row.subject }}</td>
-                <td>{{ row.grade }}</td>
-                <td>{{ row.feedback }}</td>
+                <th>Month</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Leave</th>
               </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-        </div>
-
-        <div class="panel">
-          <h3>Attendance Record</h3>
-          <table>
-            <thead>
-              <tr><th>Month</th><th>Present</th><th>Absent</th><th>Leave</th></tr>
             </thead>
             <tbody>
-            {% for row in attendance_rows %}
+              {% for row in attendance_rows %}
               <tr>
                 <td>{{ row.month }}</td>
                 <td>{{ row.present }}</td>
                 <td>{{ row.absent }}</td>
                 <td>{{ row.leave }}</td>
               </tr>
-            {% endfor %}
+              {% endfor %}
             </tbody>
           </table>
         </div>
-
-        <div class="panel">
-          <h3>NGO Help Options</h3>
-          {% for n in ngos %}
-            <div class="ngo">
-              <div>
-                <div style="font-weight:700;">{{ n.name }}</div>
-                <div class="muted">{{ n.desc }}</div>
-              </div>
-              <button class="btn-sm">{{ n.cta }}</button>
-            </div>
-          {% endfor %}
+        <div class="card">
+          <h2>NGO Help Options</h2>
+          <ul class="ngo-list">
+            {% for ngo in ngos %}
+              <li class="ngo-item">
+                  <div class="ngo-details">
+                      <div class="name">{{ ngo.name }}</div>
+                      <div class="description">{{ ngo.desc }}</div>
+                  </div>
+                  <button class="btn {% if loop.index0 == 0 %}btn-blue{% else %}btn-gold{% endif %}">{{ ngo.cta }}</button>
+              </li>
+            {% endfor %}
+          </ul>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+
+  </main>
+  <!-- NGO Contact Modal -->
+<div id="contactModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; width: 400px; max-width: 90%;">
+      <h3>Contact <span id="modalNgoName"></span></h3>
+      <textarea id="contactMessage" placeholder="Tell them about your situation and how they can help..." style="width: 100%; height: 120px; padding: 10px; margin: 15px 0; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+      <div style="display: flex; gap: 10px;">
+          <button id="sendContact" class="btn btn-blue">Send Request</button>
+          <button id="cancelContact" class="btn btn-outline">Cancel</button>
+      </div>
   </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const contactButtons = document.querySelectorAll('.contact-ngo');
+  const modal = document.getElementById('contactModal');
+  const modalNgoName = document.getElementById('modalNgoName');
+  const contactMessage = document.getElementById('contactMessage');
+  const sendButton = document.getElementById('sendContact');
+  const cancelButton = document.getElementById('cancelContact');
+  
+  let currentNgoId = null;
+  
+  contactButtons.forEach(button => {
+      button.addEventListener('click', function() {
+          currentNgoId = this.getAttribute('data-ngo-id');
+          const ngoName = this.getAttribute('data-ngo-name');
+          modalNgoName.textContent = ngoName;
+          contactMessage.value = '';
+          modal.style.display = 'block';
+      });
+  });
+  
+  cancelButton.addEventListener('click', function() {
+      modal.style.display = 'none';
+  });
+  
+  sendButton.addEventListener('click', function() {
+      const message = contactMessage.value.trim();
+      if (!message) {
+          alert('Please enter a message');
+          return;
+      }
+      
+      // Send the request to the server
+      fetch('/contact_ngo', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `ngo_id=${currentNgoId}&message=${encodeURIComponent(message)}`
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              alert(data.message);
+              modal.style.display = 'none';
+          } else {
+              alert('Error: ' + data.message);
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred. Please try again.');
+      });
+  });
+  
+  // Close modal when clicking outside
+  modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+          modal.style.display = 'none';
+      }
+  });
+});
+</script>
 </body>
 </html>
-
-
-

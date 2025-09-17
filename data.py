@@ -1,9 +1,7 @@
 USERS = {
-    'hardik': {
-        'password': 'hardik123',
+    'persona1': {
         'data': {
             'student_id': '20250001',
-            'student_name': 'Alice Johnson',
             'gpa': 8.2,
             'last_gpa': 7.9,
             'attendance_percent': 93,
@@ -28,11 +26,9 @@ USERS = {
             ]
         }
     },
-    'bob': {
-        'password': 'bob123',
+    'persona2': {
         'data': {
             'student_id': '20250002',
-            'student_name': 'Bob Singh',
             'gpa': 6.8,
             'last_gpa': 7.1,
             'attendance_percent': 88,
@@ -57,11 +53,9 @@ USERS = {
             ]
         }
     },
-    'carol': {
-        'password': 'carol123',
+    'persona3': {
         'data': {
             'student_id': '20250003',
-            'student_name': 'Carol Mehta',
             'gpa': 9.1,
             'last_gpa': 8.8,
             'attendance_percent': 97,
@@ -85,11 +79,9 @@ USERS = {
             ]
         }
     },
-    'dan': {
-        'password': 'dan123',
+    'persona4': {
         'data': {
             'student_id': '20250004',
-            'student_name': 'Dan Roy',
             'gpa': 5.9,
             'last_gpa': 6.2,
             'attendance_percent': 81,
@@ -114,11 +106,9 @@ USERS = {
             ]
         }
     },
-    'eva': {
-        'password': 'eva123',
+    'persona5': {
         'data': {
             'student_id': '20250005',
-            'student_name': 'Eva Dsouza',
             'gpa': 7.5,
             'last_gpa': 7.3,
             'attendance_percent': 90,

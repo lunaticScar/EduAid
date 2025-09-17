@@ -1,11 +1,11 @@
 /* General Reset & Root Variables */
 :root {
-  --royal-blue: #0A2342;      /* A deep, commanding navy blue */
-  --royal-blue-darker: #081C33; /* For gradients */
-  --gold-accent: #B8860B;     /* A rich, dark gold for accents */
-  --gold-accent-hover: #D4AF37; /* A slightly brighter gold for hover */
-  --background-cream: #FDFBF6; /* A soft, elegant cream background */
-  --text-dark: #2C3A47;       /* A sophisticated, soft black for text */
+  --royal-blue: #0A2342;     
+  --royal-blue-darker: #081C33; 
+  --gold-accent: #B8860B;     
+  --gold-accent-hover: #D4AF37; 
+  --background-cream: #FDFBF6; 
+  --text-dark: #2C3A47;       
   --text-light: #5A5A5A;
   --border-color: #DDE2E7;
   --heading-font: 'Merriweather', serif;
